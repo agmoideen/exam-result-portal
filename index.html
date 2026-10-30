@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BADRUL HUDHA MADRASA PORTAL</title>
+    <title id="pageTitle">MADRASA PORTAL</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&display=swap');
         body { font-family: 'Manjari', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
         .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; border-top: 8px solid #1a73e8; }
-        h2 { color: #1a73e8; margin-bottom: 15px; font-size: 20px; }
+        h2 { color: #1a73e8; margin-bottom: 10px; font-size: 20px; }
+        .sub-title { font-size: 13px; background: #fff3cd; color: #856404; padding: 5px 12px; border-radius: 15px; display: inline-block; font-weight: bold; margin-bottom: 15px; }
         select, input { width: 100%; padding: 12px; margin-bottom: 12px; border: 2px solid #ddd; border-radius: 10px; font-size: 15px; box-sizing: border-box; font-family: inherit; }
         button { width: 100%; padding: 12px; background: #1a73e8; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px; font-family: inherit; }
         button:hover { background: #1557b0; }
@@ -23,24 +24,22 @@
         .result-status { color: white; padding: 8px; margin-top: 8px; border-radius: 6px; font-weight: bold; text-align: center; }
         .btns { margin-top: 15px; display: flex; gap: 10px; }
         .btn { padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; color: white; flex: 1; text-align: center; font-size: 14px; }
-        @media print { .nav-links, .btns, .card-header-actions { display: none; } body { background: white; } .card { box-shadow: none; border: none; width: 100%; max-width: 100%; } }
+        @media print { .nav-links, .btns, form, h3 { display: none; } body { background: white; } .card { box-shadow: none; border: none; width: 100%; max-width: 100%; } }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>BADRUL HUDHA MADRASA PORTAL</h2>
+    <h2 id="institutionDisplay">MADRASA PORTAL</h2>
+    <div id="examTitleDisplay" class="sub-title">Loading...</div>
     
-    <!-- HOME / SELECTION VIEW -->
+    <!-- HOME VIEW -->
     <div id="homeView">
         <form id="resultForm">
-            <input type="text" id="examNameInput" placeholder="Exam Name (Eg: Half Yearly Exam 2026)" required>
             <input type="number" id="rollNo" placeholder="Admission Number / Roll No" required>
-            
             <select id="classSelect" required>
-                <option value="">Select Class / Sheet</option>
+                <option value="">Select Class</option>
             </select>
-            
             <button type="submit">Check Result</button>
         </form>
         <div class="nav-links">
@@ -49,9 +48,8 @@
         </div>
     </div>
 
-    <!-- RESULT DISPLAY VIEW -->
+    <!-- RESULT VIEW -->
     <div id="resultView" style="display: none;">
-        <div id="examTitleDisplay" style="background: #fff3cd; color: #856404; display: inline-block; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: bold; margin-bottom: 10px;"></div>
         <div id="res"></div>
         <div class="btns">
             <button class="btn" style="background: #6c757d;" onclick="goHome()">Back</button>
@@ -59,42 +57,54 @@
         </div>
     </div>
 
-    <!-- TEACHER LOGIN VIEW -->
+    <!-- TEACHER LOGIN -->
     <div id="teacherLoginView" style="display: none;">
-        <h3>Teacher Mark Entry Login</h3>
+        <h3>Teacher Login</h3>
         <input type="password" id="teacherPass" placeholder="Enter Teacher Password">
         <button onclick="verifyTeacher()">Login</button>
-        <div class="nav-links"><a onclick="goHome()">Back to Home</a></div>
+        <div class="nav-links"><a onclick="goHome()">Back</a></div>
     </div>
 
-    <!-- ADMIN LOGIN VIEW -->
+    <!-- ADMIN LOGIN -->
     <div id="adminLoginView" style="display: none;">
         <h3>Admin Panel Login</h3>
         <input type="password" id="adminPass" placeholder="Enter Admin Password">
         <button onclick="verifyAdmin()">Login</button>
-        <div class="nav-links"><a onclick="goHome()">Back to Home</a></div>
+        <div class="nav-links"><a onclick="goHome()">Back</a></div>
     </div>
 
     <!-- ADMIN DASHBOARD -->
     <div id="adminDashboard" style="display: none; text-align: left;">
-        <h3>Admin Dashboard</h3>
-        <p>Manage Exams, Edit Class Sheets, Set Pass Marks & Manage Passwords.</p>
-        <button style="background: #28a745;" onclick="alert('നിങ്ങളുടെ ഗൂഗിൾ ഡ്രൈവിൽ പോയി ഷീറ്റ് നേരിട്ട് എഡിറ്റ് ചെയ്യാവുന്നതാണ്.')">Open Google Sheet Config</button>
+        <h3>Admin Settings</h3>
+        <label>Institution Name:</label>
+        <input type="text" id="adminInstName">
+        
+        <label>Exam Name:</label>
+        <input type="text" id="adminExamName">
+        
+        <label>Pass Mark:</label>
+        <input type="number" id="adminPassMark">
+        
+        <button style="background: #28a745;" onclick="saveConfig()">Save Changes to Sheet</button>
         <button style="background: #dc3545;" onclick="goHome()">Logout</button>
     </div>
-
 </div>
 
 <script>
     // പുതിയ ഗൂഗിൾ ആപ്പ്സ് സ്ക്രിപ്റ്റ് വെബ് ആപ്പ് ലിങ്ക് ഇവിടെ നൽകിയിരിക്കുന്നു
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbzedrnfmO8DVafOoz-sQ3oS-TthLdwNXOU6bPfEsIG7NTjnWl-olRMQAnlpOpNPHNbXqg/exec";
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbxDIUK3YJbjvEiCCNuFjQum3JGPXm_GxuLtJUmoO4X_NzajkOfJvA0dpQmr5iDEfIwDQg/exec";
+    let globalConfig = {};
 
-    // ആപ്പ് ഓപ്പൺ ചെയ്യുമ്പോൾ ഷീറ്റിലെ ക്ലാസുകൾ ഓട്ടോമാറ്റിക്കായി ലോഡ് ചെയ്യുന്നു
     window.onload = function() {
         fetch(`${webAppUrl}?action=getClasses`)
             .then(res => res.json())
             .then(data => {
                 if(data.status === "success") {
+                    globalConfig = data.config;
+                    document.getElementById('institutionDisplay').innerText = globalConfig.institution;
+                    document.getElementById('pageTitle').innerText = globalConfig.institution;
+                    document.getElementById('examTitleDisplay').innerText = globalConfig.examName;
+
                     let select = document.getElementById('classSelect');
                     data.classes.forEach(cls => {
                         let opt = document.createElement('option');
@@ -103,37 +113,35 @@
                         select.appendChild(opt);
                     });
                 }
-            })
-            .catch(err => console.log("Classes load error:", err));
+            });
     }
 
     document.getElementById('resultForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const rollNo = document.getElementById('rollNo').value.trim();
         const className = document.getElementById('classSelect').value.trim();
-        const examName = document.getElementById('examNameInput').value.trim();
 
         document.getElementById('homeView').style.display = 'none';
         document.getElementById('resultView').style.display = 'block';
-        document.getElementById('examTitleDisplay').innerText = `${examName} - Class: ${className}`;
         document.getElementById('res').innerHTML = "<p>റിസൾട്ട് പരിശോധിക്കുന്നു...</p>";
 
-        fetch(`${webAppUrl}?action=getResult&class=${encodeURIComponent(className)}&rollNo=${encodeURIComponent(rollNo)}&exam=${encodeURIComponent(examName)}`)
+        fetch(`${webAppUrl}?action=getResult&class=${encodeURIComponent(className)}&rollNo=${encodeURIComponent(rollNo)}`)
             .then(res => res.json())
             .then(data => {
                 if(data.status === "success") {
                     let headers = data.headers;
                     let s = data.student;
+                    let passMark = data.passMark;
                     
                     let h = `<div class="info-box">
                                 <div class="header">
-                                    <strong>Roll/Adm No:</strong> ${s[0]}<br>
+                                    <strong>Admission No:</strong> ${s[0]}<br>
                                     <strong>Name:</strong> ${s[1]}<br>
                                     <strong>Class:</strong> ${className}
                                 </div>
                                 <table>`;
                     let totalVal = "";
-                    let resStatus = "";
+                    let isAllPassed = true;
 
                     for (let i = 2; i < headers.length; i++) {
                         let head = headers[i] ? headers[i].toString().trim() : "";
@@ -142,25 +150,27 @@
                             if (head.toUpperCase().includes("TOTAL") || head.includes("ആകെ")) {
                                 totalVal = val;
                             } else if (head.toUpperCase().includes("RESULT") || head.includes("ഫലം")) {
-                                resStatus = val;
+                                // Ignore sheet result if calculated dynamically
                             } else {
                                 h += `<tr><td>${head}</td><td class="val">${val}</td></tr>`;
+                                if (!isNaN(val) && Number(val) < passMark) {
+                                    isAllPassed = false;
+                                }
                             }
                         }
                     }
                     h += `</table>`;
                     if (totalVal) h += `<div class="total"><span>TOTAL</span><span>${totalVal}</span></div>`;
-                    if (resStatus) {
-                        let isPass = resStatus.toUpperCase() === "PASS" || resStatus.includes("വിജയിച്ചു");
-                        h += `<div class="result-status" style="background:${isPass ? '#28a745' : '#dc3545'}">RESULT: ${resStatus}</div>`;
-                    }
+                    
+                    let resStatus = isAllPassed ? "PASS" : "FAIL";
+                    let resBg = isAllPassed ? "#28a745" : "#dc3545";
+                    h += `<div class="result-status" style="background:${resBg}">RESULT: ${resStatus}</div>`;
                     h += `</div>`;
+                    
                     document.getElementById('res').innerHTML = h;
                 } else {
-                    document.getElementById('res').innerHTML = `<p style='color:red;'>റിസൾട്ട് കണ്ടെത്താനായില്ല. നംബർ പരിശോധിക്കുക.</p>`;
+                    document.getElementById('res').innerHTML = `<p style='color:red;'>റിസൾട്ട് കണ്ടെത്താനായില്ല. നമ്പർ പരിശോധിക്കുക.</p>`;
                 }
-            }).catch(err => {
-                document.getElementById('res').innerHTML = `<p style='color:red;'>ഡാറ്റ ഫെച്ച് ചെയ്യുന്നതിൽ തടസ്സം നേരിട്ടു.</p>`;
             });
     });
 
@@ -176,12 +186,36 @@
 
     function verifyAdmin() {
         let pass = document.getElementById('adminPass').value;
-        if(pass === "admin123") {
-            document.getElementById('adminLoginView').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'block';
-        } else {
-            alert("തെറ്റായ പാസ്‌വേർഡ്!");
-        }
+        fetch(`${webAppUrl}?action=verifyAdmin&pass=${pass}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") {
+                    document.getElementById('adminLoginView').style.display = 'none';
+                    document.getElementById('adminDashboard').style.display = 'block';
+                    document.getElementById('adminInstName').value = globalConfig.institution;
+                    document.getElementById('adminExamName').value = globalConfig.examName;
+                    document.getElementById('adminPassMark').value = globalConfig.passMark || 30;
+                } else {
+                    alert("തെറ്റായ പാസ്‌വേർഡ്!");
+                }
+            });
+    }
+
+    function saveConfig() {
+        let inst = document.getElementById('adminInstName').value;
+        let exam = document.getElementById('adminExamName').value;
+        let pMark = document.getElementById('adminPassMark').value;
+
+        fetch(`${webAppUrl}?action=updateConfig&institution=${encodeURIComponent(inst)}&examName=${encodeURIComponent(exam)}&passMark=${encodeURIComponent(pMark)}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") {
+                    alert("വിവരങ്ങൾ വിജയകരമായി സേവ് ചെയ്തു!");
+                    location.reload();
+                } else {
+                    alert("സേവ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു.");
+                }
+            });
     }
 
     function verifyTeacher() {
@@ -190,7 +224,7 @@
             .then(res => res.json())
             .then(data => {
                 if(data.status === "success") {
-                    alert(`സ്വാഗതം ${data.teacherName}! മാർക്ക് എട്രി ചെയ്യാൻ അനുവാദമുണ്ട്.`);
+                    alert(`സ്വാഗതം ${data.teacherName}!`);
                     goHome();
                 } else {
                     alert("ടീച്ചർ പാസ്‌വേർഡ് തെറ്റാണ്!");
