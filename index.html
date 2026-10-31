@@ -7,7 +7,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&display=swap');
         body { font-family: 'Manjari', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 15px; }
-        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: center; border-top: 8px solid #1a73e8; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 600px; text-align: center; border-top: 8px solid #1a73e8; }
         h2 { color: #1a73e8; margin-bottom: 10px; font-size: 20px; }
         .sub-title { font-size: 13px; background: #fff3cd; color: #856404; padding: 5px 12px; border-radius: 15px; display: inline-block; font-weight: bold; margin-bottom: 15px; }
         select, input { width: 100%; padding: 12px; margin-bottom: 12px; border: 2px solid #ddd; border-radius: 10px; font-size: 15px; box-sizing: border-box; font-family: inherit; }
@@ -15,16 +15,18 @@
         button:hover { background: #1557b0; }
         .nav-links { display: flex; justify-content: space-between; margin-top: 15px; font-size: 14px; }
         .nav-links a { color: #1a73e8; text-decoration: none; cursor: pointer; font-weight: bold; }
-        .info-box { text-align: left; border: 2px solid #f0f0f0; border-radius: 12px; overflow: hidden; margin-top: 15px; }
+        .info-box, .report-box { text-align: left; border: 2px solid #f0f0f0; border-radius: 12px; overflow: hidden; margin-top: 15px; background: #fff; }
         .header { background-color: #f8f9fa; padding: 12px; border-bottom: 2px solid #f0f0f0; }
-        table { width: 100%; border-collapse: collapse; }
-        td { padding: 8px 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 8px 10px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background: #f1f3f5; color: #333; }
         .val { font-weight: bold; text-align: right; color: #1a73e8; }
-        .total { background: #1a73e8; color: white; padding: 12px; font-weight: bold; display: flex; justify-content: space-between; font-size: 16px; }
+        .total { background: #1a73e8; color: white; padding: 10px; font-weight: bold; display: flex; justify-content: space-between; font-size: 16px; }
         .result-status { color: white; padding: 8px; margin-top: 8px; border-radius: 6px; font-weight: bold; text-align: center; }
+        .stats-box { background: #e8f4fd; padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: left; font-size: 14px; line-height: 1.6; border: 1px solid #b6d4fe; }
         .btns { margin-top: 15px; display: flex; gap: 10px; }
         .btn { padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; color: white; flex: 1; text-align: center; font-size: 14px; }
-        @media print { .nav-links, .btns, form, h3 { display: none; } body { background: white; } .card { box-shadow: none; border: none; width: 100%; max-width: 100%; } }
+        @media print { .nav-links, .btns, form, h3, .sub-title { display: none; } body { background: white; } .card { box-shadow: none; border: none; width: 100%; max-width: 100%; padding: 0; } }
     </style>
 </head>
 <body>
@@ -65,6 +67,14 @@
         <div class="nav-links"><a onclick="goHome()">Back</a></div>
     </div>
 
+    <!-- TEACHER DASHBOARD -->
+    <div id="teacherDashboard" style="display: none; text-align: left;">
+        <h3 id="teacherWelcome"></h3>
+        <p>Allowed Class: <b id="tClassDisplay"></b></p>
+        <div id="teacherMarkContainer"></div>
+        <button class="btn" style="background: #dc3545; margin-top:15px;" onclick="goHome()">Logout</button>
+    </div>
+
     <!-- ADMIN LOGIN -->
     <div id="adminLoginView" style="display: none;">
         <h3>Admin Panel Login</h3>
@@ -75,25 +85,40 @@
 
     <!-- ADMIN DASHBOARD -->
     <div id="adminDashboard" style="display: none; text-align: left;">
-        <h3>Admin Settings</h3>
+        <h3>Admin Dashboard</h3>
         <label>Institution Name:</label>
         <input type="text" id="adminInstName">
-        
         <label>Exam Name:</label>
         <input type="text" id="adminExamName">
-        
         <label>Pass Mark:</label>
         <input type="number" id="adminPassMark">
+        <button style="background: #28a745;" onclick="saveConfig()">Save Settings</button>
         
-        <button style="background: #28a745;" onclick="saveConfig()">Save Changes to Sheet</button>
-        <button style="background: #dc3545;" onclick="goHome()">Logout</button>
+        <hr style="margin: 20px 0;">
+        <h4>Class Report & A4 Mark List</h4>
+        <select id="adminReportClassSelect">
+            <option value="">Select Class for Report</option>
+        </select>
+        <button style="background: #1a73e8;" onclick="loadAdminReport()">Generate Report & A4 List</button>
+        
+        <button style="background: #dc3545; margin-top: 15px;" onclick="goHome()">Logout / Back</button>
+    </div>
+
+    <!-- ADMIN REPORT VIEW -->
+    <div id="adminReportView" style="display: none; text-align: left;">
+        <h3 style="text-align:center;">Class Mark Report</h3>
+        <div id="adminReportContent"></div>
+        <div class="btns">
+            <button class="btn" style="background: #6c757d;" onclick="showAdminDashboard()">Back to Admin</button>
+            <button class="btn" style="background: #28a745;" onclick="window.print()">Print A4 / PDF</button>  
+        </div>
     </div>
 </div>
 
 <script>
-    // പുതിയ ഗൂഗിൾ ആപ്പ്സ് സ്ക്രിപ്റ്റ് വെബ് ആപ്പ് ലിങ്ക് ഇവിടെ നൽകിയിരിക്കുന്നു
     const webAppUrl = "https://script.google.com/macros/s/AKfycbxDIUK3YJbjvEiCCNuFjQum3JGPXm_GxuLtJUmoO4X_NzajkOfJvA0dpQmr5iDEfIwDQg/exec";
     let globalConfig = {};
+    let teacherAllowedClass = "";
 
     window.onload = function() {
         fetch(`${webAppUrl}?action=getClasses`)
@@ -106,11 +131,10 @@
                     document.getElementById('examTitleDisplay').innerText = globalConfig.examName;
 
                     let select = document.getElementById('classSelect');
+                    let adminSelect = document.getElementById('adminReportClassSelect');
                     data.classes.forEach(cls => {
-                        let opt = document.createElement('option');
-                        opt.value = cls;
-                        opt.textContent = cls;
-                        select.appendChild(opt);
+                        select.innerHTML += `<option value="${cls}">${cls}</option>`;
+                        adminSelect.innerHTML += `<option value="${cls}">${cls}</option>`;
                     });
                 }
             });
@@ -131,7 +155,7 @@
                 if(data.status === "success") {
                     let headers = data.headers;
                     let s = data.student;
-                    let passMark = data.passMark;
+                    let passMark = Number(globalConfig.passMark || 30);
                     
                     let h = `<div class="info-box">
                                 <div class="header">
@@ -149,9 +173,7 @@
                         if (head && val !== "" && val !== "-") {
                             if (head.toUpperCase().includes("TOTAL") || head.includes("ആകെ")) {
                                 totalVal = val;
-                            } else if (head.toUpperCase().includes("RESULT") || head.includes("ഫലം")) {
-                                // Ignore sheet result if calculated dynamically
-                            } else {
+                            } else if (!head.toUpperCase().includes("RESULT")) {
                                 h += `<tr><td>${head}</td><td class="val">${val}</td></tr>`;
                                 if (!isNaN(val) && Number(val) < passMark) {
                                     isAllPassed = false;
@@ -166,22 +188,74 @@
                     let resBg = isAllPassed ? "#28a745" : "#dc3545";
                     h += `<div class="result-status" style="background:${resBg}">RESULT: ${resStatus}</div>`;
                     h += `</div>`;
-                    
                     document.getElementById('res').innerHTML = h;
                 } else {
-                    document.getElementById('res').innerHTML = `<p style='color:red;'>റിസൾട്ട് കണ്ടെത്താനായില്ല. നമ്പർ പരിശോധിക്കുക.</p>`;
+                    document.getElementById('res').innerHTML = `<p style='color:red;'>റിസൾട്ട് കണ്ടെത്താനായില്ല.</p>`;
                 }
             });
     });
 
-    function showTeacherLogin() {
-        document.getElementById('homeView').style.display = 'none';
-        document.getElementById('teacherLoginView').style.display = 'block';
+    function showTeacherLogin() { hideAll(); document.getElementById('teacherLoginView').style.display = 'block'; }
+    function showAdminLogin() { hideAll(); document.getElementById('adminLoginView').style.display = 'block'; }
+    function showAdminDashboard() { hideAll(); document.getElementById('adminDashboard').style.display = 'block'; }
+
+    function verifyTeacher() {
+        let pass = document.getElementById('teacherPass').value;
+        fetch(`${webAppUrl}?action=verifyTeacher&pass=${pass}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") {
+                    teacherAllowedClass = data.allowedClass;
+                    hideAll();
+                    document.getElementById('teacherDashboard').style.display = 'block';
+                    document.getElementById('teacherWelcome').innerText = `Welcome, ${data.teacherName}`;
+                    document.getElementById('tClassDisplay').innerText = teacherAllowedClass;
+                    loadTeacherMarkEntry(teacherAllowedClass);
+                } else {
+                    alert("ടീച്ചർ പാസ്‌വേർഡ് തെറ്റാണ്!");
+                }
+            });
     }
 
-    function showAdminLogin() {
-        document.getElementById('homeView').style.display = 'none';
-        document.getElementById('adminLoginView').style.display = 'block';
+    function loadTeacherMarkEntry(className) {
+        fetch(`${webAppUrl}?action=getTeacherClassData&className=${encodeURIComponent(className)}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") {
+                    let headers = data.headers;
+                    let rows = data.rows;
+                    let h = `<p><b>Class: ${className} Mark Entry</b></p><div style="max-height:300px; overflow-y:auto;"><table><tr><th>Adm</th><th>Name</th><th>Action</th></tr>`;
+                    rows.forEach((r, idx) => {
+                        h += `<tr><td>${r[0]}</td><td>${r[1]}</td><td><button onclick='editStudentMarks(${JSON.stringify(r)}, ${JSON.stringify(headers)}, "${className}")' style="padding:5px 10px; font-size:12px;">Edit Marks</button></td></tr>`;
+                    });
+                    h += `</table></div><div id="editArea"></div>`;
+                    document.getElementById('teacherMarkContainer').innerHTML = h;
+                }
+            });
+    }
+
+    function editStudentMarks(row, headers, className) {
+        let h = `<h4>Editing: ${row[1]} (Adm: ${row[0]})</h4><div style="text-align:left;">`;
+        for(let i=2; i<headers.length; i++) {
+            let head = headers[i];
+            if(!head.toUpperCase().includes("TOTAL") && !head.toUpperCase().includes("RESULT")) {
+                h += `<label>${head}:</label><div style="display:flex; gap:5px; margin-bottom:5px;">
+                      <input type="number" id="mark_${i}" value="${row[i]}">
+                      <button onclick="saveMark('${row[0]}', ${i}, '${className}')" style="width:80px; padding:6px; font-size:12px;">Save</button></div>`;
+            }
+        }
+        h += `</div>`;
+        document.getElementById('editArea').innerHTML = h;
+    }
+
+    function saveMark(rollNo, colIndex, className) {
+        let mark = document.getElementById(`mark_${colIndex}`).value;
+        fetch(`${webAppUrl}?action=saveTeacherMarks&className=${encodeURIComponent(className)}&rollNo=${encodeURIComponent(rollNo)}&colIndex=${colIndex}&mark=${mark}`)
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") alert("മാർക്ക് സേവ് ചെയ്തു!");
+                else alert("പരാജയപ്പെട്ടു.");
+            });
     }
 
     function verifyAdmin() {
@@ -190,8 +264,7 @@
             .then(res => res.json())
             .then(data => {
                 if(data.status === "success") {
-                    document.getElementById('adminLoginView').style.display = 'none';
-                    document.getElementById('adminDashboard').style.display = 'block';
+                    showAdminDashboard();
                     document.getElementById('adminInstName').value = globalConfig.institution;
                     document.getElementById('adminExamName').value = globalConfig.examName;
                     document.getElementById('adminPassMark').value = globalConfig.passMark || 30;
@@ -205,40 +278,62 @@
         let inst = document.getElementById('adminInstName').value;
         let exam = document.getElementById('adminExamName').value;
         let pMark = document.getElementById('adminPassMark').value;
-
         fetch(`${webAppUrl}?action=updateConfig&institution=${encodeURIComponent(inst)}&examName=${encodeURIComponent(exam)}&passMark=${encodeURIComponent(pMark)}`)
             .then(res => res.json())
             .then(data => {
-                if(data.status === "success") {
-                    alert("വിവരങ്ങൾ വിജയകരമായി സേവ് ചെയ്തു!");
-                    location.reload();
-                } else {
-                    alert("സേവ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു.");
-                }
+                if(data.status === "success") { alert("സേവ് ചെയ്തു!"); location.reload(); }
             });
     }
 
-    function verifyTeacher() {
-        let pass = document.getElementById('teacherPass').value;
-        fetch(`${webAppUrl}?action=verifyTeacher&pass=${pass}`)
+    function loadAdminReport() {
+        let className = document.getElementById('adminReportClassSelect').value;
+        if(!className) { alert("ക്ലാസ് തെരഞ്ഞെടുക്കുക!"); return; }
+
+        fetch(`${webAppUrl}?action=getAdminClassReport&className=${encodeURIComponent(className)}`)
             .then(res => res.json())
             .then(data => {
                 if(data.status === "success") {
-                    alert(`സ്വാഗതം ${data.teacherName}!`);
-                    goHome();
-                } else {
-                    alert("ടീച്ചർ പാസ്‌വേർഡ് തെറ്റാണ്!");
+                    hideAll();
+                    document.getElementById('adminReportView').style.display = 'block';
+                    let stats = data.stats;
+                    let headers = data.headers;
+                    
+                    let h = `<div class="stats-box">
+                               <b>Class:</b> ${className}<br>
+                               <b>Total Students:</b> ${stats.total}<br>
+                               <b>Passed:</b> <span style="color:green; font-weight:bold;">${stats.passed}</span><br>
+                               <b>Failed:</b> <span style="color:red; font-weight:bold;">${stats.failed}</span><br>
+                               <b>Pass Percentage:</b> <span style="color:#1a73e8; font-weight:bold;">${stats.percentage}%</span>
+                             </div>`;
+                             
+                    h += `<div style="overflow-x:auto;"><table><tr>`;
+                    headers.forEach(head => h += `<th>${head}</th>`);
+                    h += `<th>Status</th></tr>`;
+                    
+                    data.rows.forEach(item => {
+                        let r = item.row;
+                        h += `<tr>`;
+                        r.forEach(cell => h += `<td>${cell}</td>`);
+                        let statusColor = item.pass ? "color:green;font-weight:bold;" : "color:red;font-weight:bold;";
+                        h += `<td style="${statusColor}">${item.pass ? 'PASS' : 'FAIL'}</td></tr>`;
+                    });
+                    h += `</table></div>`;
+                    document.getElementById('adminReportContent').innerHTML = h;
                 }
             });
     }
 
-    function goHome() {
-        document.getElementById('homeView').style.display = 'block';
+    function hideAll() {
+        document.getElementById('homeView').style.display = 'none';
         document.getElementById('resultView').style.display = 'none';
         document.getElementById('teacherLoginView').style.display = 'none';
+        document.getElementById('teacherDashboard').style.display = 'none';
         document.getElementById('adminLoginView').style.display = 'none';
         document.getElementById('adminDashboard').style.display = 'none';
+        document.getElementById('adminReportView').style.display = 'none';
     }
+
+    function goHome() { hideAll(); document.getElementById('homeView').style.display = 'block'; }
 </script>
 
 </body>
