@@ -117,7 +117,7 @@
 
 <script>
     // പുതിയ ഗൂഗിൾ ആപ്പ്സ് സ്ക്രിപ്റ്റ് വെബ് ആപ്പ് ലിങ്ക് ഇവിടെ നൽകിയിരിക്കുന്നു
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbzKIsymr15ufmjcWCLHyzAUkzPGJ4mU5XQCaR7pHIix0I1kJMlGaHc51ukqdA43xT6iZA/exec";
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbx-ObUdlZbW426CnQXkslhqm7vg9qnVASjqbkWqNLvLgEOfn3gx3oFvk-Yr_n-l9bJ_/exec";
     let globalConfig = {};
     let teacherAllowedClass = "";
 
@@ -225,12 +225,14 @@
                 if(data.status === "success") {
                     let headers = data.headers;
                     let rows = data.rows;
-                    let h = `<p><b>Class: ${className} Mark Entry</b></p><div style="max-height:300px; overflow-y:auto;"><table><tr><th>Adm</th><th>Name</th><th>Action</th></tr>`;
+                    let h = `<p><b>Class: ${className} Mark Entry</b></p><div style="max-height:350px; overflow-y:auto;"><table><tr><th>Adm</th><th>Name</th><th>Action</th></tr>`;
                     rows.forEach((r, idx) => {
                         h += `<tr><td>${r[0]}</td><td>${r[1]}</td><td><button onclick='editStudentMarks(${JSON.stringify(r)}, ${JSON.stringify(headers)}, "${className}")' style="padding:5px 10px; font-size:12px;">Edit Marks</button></td></tr>`;
                     });
-                    h += `</table></div><div id="editArea"></div>`;
+                    h += `</table></div><div id="editArea" style="margin-top:15px; border-top:1px solid #ddd; padding-top:10px;"></div>`;
                     document.getElementById('teacherMarkContainer').innerHTML = h;
+                } else {
+                    alert("ക്ലാസ് ഡാറ്റ ലഭ്യമല്ല.");
                 }
             });
     }
@@ -239,10 +241,11 @@
         let h = `<h4>Editing: ${row[1]} (Adm: ${row[0]})</h4><div style="text-align:left;">`;
         for(let i=2; i<headers.length; i++) {
             let head = headers[i];
-            if(!head.toUpperCase().includes("TOTAL") && !head.toUpperCase().includes("RESULT")) {
-                h += `<label>${head}:</label><div style="display:flex; gap:5px; margin-bottom:5px;">
-                      <input type="number" id="mark_${i}" value="${row[i]}">
-                      <button onclick="saveMark('${row[0]}', ${i}, '${className}')" style="width:80px; padding:6px; font-size:12px;">Save</button></div>`;
+            if(head && !head.toUpperCase().includes("TOTAL") && !head.toUpperCase().includes("RESULT")) {
+                h += `<label style="font-size:13px; font-weight:bold;">${head}:</label>
+                      <div style="display:flex; gap:5px; margin-bottom:8px;">
+                      <input type="number" id="mark_${i}" value="${row[i]}" style="margin-bottom:0;">
+                      <button onclick="saveMark('${row[0]}', ${i}, '${className}')" style="width:90px; padding:8px; font-size:13px; margin-bottom:0;">Save</button></div>`;
             }
         }
         h += `</div>`;
@@ -254,8 +257,8 @@
         fetch(`${webAppUrl}?action=saveTeacherMarks&className=${encodeURIComponent(className)}&rollNo=${encodeURIComponent(rollNo)}&colIndex=${colIndex}&mark=${mark}`)
             .then(res => res.json())
             .then(data => {
-                if(data.status === "success") alert("മാർക്ക് സേവ് ചെയ്തു!");
-                else alert("പരാജയപ്പെട്ടു.");
+                if(data.status === "success") alert("മാർക്ക് വിജയകരമായി സേവ് ചെയ്തു!");
+                else alert("സേവ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു.");
             });
     }
 
