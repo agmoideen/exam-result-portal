@@ -32,8 +32,8 @@
 <body>
 
 <div class="card">
-    <h2 id="institutionDisplay">MADRASA PORTAL</h2>
-    <div id="examTitleDisplay" class="sub-title">Loading...</div>
+    <h2 id="institutionDisplay">MEMS SCHOOL TRIKARIPUR</h2>
+    <div id="examTitleDisplay" class="sub-title">MID TERM EXAM 2026</div>
     
     <!-- HOME VIEW -->
     <div id="homeView">
@@ -117,8 +117,8 @@
 
 <script>
     // പുതിയ ഗൂഗിൾ ആപ്പ്സ് സ്ക്രിപ്റ്റ് വെബ് ആപ്പ് ലിങ്ക് ഇവിടെ നൽകിയിരിക്കുന്നു
-    const webAppUrl = "https://script.google.com/macros/s/AKfycbxaZOxxeNMX4vu7x6YXWW39fY5HZSjZXoyWc1VMw1QeiJTzayYrFj0b8hj63assRTwdiQ/exec";
-    let globalConfig = {};
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbwF1hYTbIAJ7WE7BGlfehwG48uUWbmh9voYBaGTfZm-dDRPmGPXKCsHroaygUwCK5jg/exec";
+    let globalConfig = { institution: "MEMS SCHOOL TRIKARIPUR", examName: "MID TERM EXAM 2026", passMark: 30 };
     let teacherAllowedClass = "";
 
     window.onload = function() {
@@ -126,18 +126,24 @@
             .then(res => res.json())
             .then(data => {
                 if(data.status === "success") {
-                    globalConfig = data.config;
+                    globalConfig = data.config || globalConfig;
                     document.getElementById('institutionDisplay').innerText = globalConfig.institution;
                     document.getElementById('pageTitle').innerText = globalConfig.institution;
                     document.getElementById('examTitleDisplay').innerText = globalConfig.examName;
 
                     let select = document.getElementById('classSelect');
                     let adminSelect = document.getElementById('adminReportClassSelect');
+                    select.innerHTML = '<option value="">Select Class</option>';
+                    adminSelect.innerHTML = '<option value="">Select Class for Report</option>';
+                    
                     data.classes.forEach(cls => {
                         select.innerHTML += `<option value="${cls}">${cls}</option>`;
                         adminSelect.innerHTML += `<option value="${cls}">${cls}</option>`;
                     });
                 }
+            })
+            .catch(err => {
+                console.error(err);
             });
     }
 
